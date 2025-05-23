@@ -15,47 +15,48 @@ export class ChatController {
       // Handle campaign creation action
       if (action === 'create_campaign') {
         const { campaignData } = req.body;
-        
+
         if (!campaignData || !campaignData.name || !campaignData.objective) {
-          return res.status(400).json({ 
-            error: 'Campaign name and objective are required' 
+          return res.status(400).json({
+            error: 'Campaign name and objective are required',
           });
         }
 
         try {
           const campaign = await CampaignModel.create(campaignData);
           const response = `Great! I've successfully created your campaign "${campaign.name}" with objective ${campaign.objective}. The campaign is now active and ready to go!`;
-          
+
           AIService.clearContext(); // Clear conversation after successful creation
-          
+
           return res.json({
             id: uuidv4(),
             role: 'assistant',
             content: response,
             timestamp: new Date(),
-            campaignCreated: campaign
+            campaignCreated: campaign,
           });
         } catch (error) {
           console.error('Error creating campaign via chat:', error);
-          const errorResponse = 'I apologize, but there was an error creating your campaign. Please try again or check the campaign details.';
-          
+          const errorResponse =
+            'I apologize, but there was an error creating your campaign. Please try again or check the campaign details.';
+
           return res.json({
             id: uuidv4(),
             role: 'assistant',
             content: errorResponse,
-            timestamp: new Date()
+            timestamp: new Date(),
           });
         }
       }
 
       // Generate AI response
       const aiResponse = await AIService.generateResponse(message);
-      
+
       res.json({
         id: uuidv4(),
         role: 'assistant',
         content: aiResponse,
-        timestamp: new Date()
+        timestamp: new Date(),
       });
     } catch (error) {
       console.error('Error handling chat message:', error);

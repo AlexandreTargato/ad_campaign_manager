@@ -24,7 +24,7 @@ summarize the campaign details and ask for confirmation to create it.
 Current conversation context: ${this.conversationContext.join('\n')}`;
 
       const message = await anthropic.messages.create({
-        model: 'claude-3-sonnet-20240229',
+        model: 'claude-3-7-sonnet-20250219',
         max_tokens: 1000,
         system: systemPrompt,
         messages: [
@@ -35,12 +35,13 @@ Current conversation context: ${this.conversationContext.join('\n')}`;
         ],
       });
 
-      const response = message.content[0].type === 'text' ? message.content[0].text : '';
-      
+      const response =
+        message.content[0].type === 'text' ? message.content[0].text : '';
+
       // Update conversation context
       this.conversationContext.push(`User: ${userMessage}`);
       this.conversationContext.push(`Assistant: ${response}`);
-      
+
       // Keep only last 10 exchanges to manage context length
       if (this.conversationContext.length > 20) {
         this.conversationContext = this.conversationContext.slice(-20);
@@ -60,26 +61,39 @@ Current conversation context: ${this.conversationContext.join('\n')}`;
   static extractCampaignData(conversation: string[]): any {
     // Simple extraction logic - in a real app, you'd use more sophisticated NLP
     const fullConversation = conversation.join(' ').toLowerCase();
-    
+
     const campaignData: any = {};
-    
+
     // Extract objective
-    if (fullConversation.includes('traffic') || fullConversation.includes('website visits')) {
+    if (
+      fullConversation.includes('traffic') ||
+      fullConversation.includes('website visits')
+    ) {
       campaignData.objective = 'OUTCOME_TRAFFIC';
-    } else if (fullConversation.includes('awareness') || fullConversation.includes('brand')) {
+    } else if (
+      fullConversation.includes('awareness') ||
+      fullConversation.includes('brand')
+    ) {
       campaignData.objective = 'OUTCOME_AWARENESS';
-    } else if (fullConversation.includes('engagement') || fullConversation.includes('likes') || fullConversation.includes('comments')) {
+    } else if (
+      fullConversation.includes('engagement') ||
+      fullConversation.includes('likes') ||
+      fullConversation.includes('comments')
+    ) {
       campaignData.objective = 'OUTCOME_ENGAGEMENT';
-    } else if (fullConversation.includes('leads') || fullConversation.includes('lead generation')) {
+    } else if (
+      fullConversation.includes('leads') ||
+      fullConversation.includes('lead generation')
+    ) {
       campaignData.objective = 'OUTCOME_LEADS';
     }
-    
+
     // Extract budget (look for dollar amounts)
     const budgetMatch = fullConversation.match(/\$?(\d+(?:\.\d{2})?)/);
     if (budgetMatch) {
       campaignData.daily_budget = parseFloat(budgetMatch[1]) * 100; // Convert to cents
     }
-    
+
     return campaignData;
   }
 }
