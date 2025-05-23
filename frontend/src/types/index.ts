@@ -15,6 +15,30 @@ export interface ChatMessage {
   campaignCreated?: Campaign;
 }
 
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+  created_at?: string;
+}
+
+export interface CreateUserRequest {
+  email: string;
+  password: string;
+  name: string;
+}
+
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface AuthResponse {
+  user: User;
+  token: string;
+  message: string;
+}
+
 export interface CreateCampaignRequest {
   name: string;
   objective: Campaign["objective"];

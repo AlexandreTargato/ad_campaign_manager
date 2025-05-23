@@ -41,31 +41,7 @@ export const Dashboard: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">
-                Campaign Manager
-              </h1>
-              <p className="text-gray-600 mt-1">
-                Manage your Facebook ad campaigns
-              </p>
-            </div>
-            <button
-              onClick={() => refetch()}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors flex items-center gap-2"
-            >
-              <RefreshCw className="w-4 h-4" />
-              Refresh
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Campaigns Section */}
           <div className="lg:col-span-2">
@@ -73,6 +49,13 @@ export const Dashboard: React.FC = () => {
               <h2 className="text-xl font-semibold text-gray-900">
                 Active Campaigns ({campaigns?.length || 0})
               </h2>
+              <button
+                onClick={() => refetch()}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors flex items-center gap-2"
+              >
+                <RefreshCw className="w-4 h-4" />
+                Refresh
+              </button>
             </div>
 
             {campaigns && campaigns.length > 0 ? (
@@ -113,6 +96,5 @@ export const Dashboard: React.FC = () => {
           </div>
         </div>
       </div>
-    </div>
   );
 };

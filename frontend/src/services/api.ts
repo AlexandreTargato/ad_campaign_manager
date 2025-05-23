@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Campaign, CreateCampaignRequest, ChatMessage } from '../types';
+import { Campaign, CreateCampaignRequest, ChatMessage, LoginRequest, CreateUserRequest, AuthResponse, User } from '../types';
 
 const api = axios.create({
   baseURL: '/api',
@@ -7,6 +7,43 @@ const api = axios.create({
     'Content-Type': 'application/json',
   },
 });
+
+// Token management
+let authToken: string | null = localStorage.getItem('authToken');
+
+// Request interceptor to add auth token
+api.interceptors.request.use((config) => {
+  if (authToken) {
+    config.headers.Authorization = `Bearer ${authToken}`;
+  }
+  return config;
+});
+
+// Response interceptor to handle auth errors
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401 || error.response?.status === 403) {
+      // Clear invalid token
+      authToken = null;
+      localStorage.removeItem('authToken');
+      // Redirect to login could be handled here
+    }
+    return Promise.reject(error);
+  }
+);
+
+export const setAuthToken = (token: string) => {
+  authToken = token;
+  localStorage.setItem('authToken', token);
+};
+
+export const clearAuthToken = () => {
+  authToken = null;
+  localStorage.removeItem('authToken');
+};
+
+export const getAuthToken = () => authToken;
 
 export const campaignAPI = {
   getAll: (): Promise<Campaign[]> => 
@@ -23,6 +60,20 @@ export const campaignAPI = {
   
   delete: (id: string): Promise<void> => 
     api.delete(`/campaigns/${id}`).then(res => res.data),
+};
+
+export const authAPI = {
+  login: (credentials: LoginRequest): Promise<AuthResponse> => 
+    api.post('/auth/login', credentials).then(res => res.data),
+  
+  register: (userData: CreateUserRequest): Promise<AuthResponse> => 
+    api.post('/auth/register', userData).then(res => res.data),
+  
+  getProfile: (): Promise<{ user: User }> => 
+    api.get('/auth/profile').then(res => res.data),
+  
+  refreshToken: (): Promise<{ token: string; user: User }> => 
+    api.post('/auth/refresh').then(res => res.data),
 };
 
 export const chatAPI = {
