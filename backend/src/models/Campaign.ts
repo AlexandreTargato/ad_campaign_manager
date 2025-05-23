@@ -3,9 +3,17 @@ import { Campaign, CreateCampaignRequest } from '../types';
 import { v4 as uuidv4 } from 'uuid';
 
 export class CampaignModel {
-  static async getAll(): Promise<Campaign[]> {
-    const result = await pool.query('SELECT * FROM campaigns ORDER BY created_at DESC');
-    return result.rows;
+  static async getAll(userId?: string): Promise<Campaign[]> {
+    if (userId) {
+      const result = await pool.query(
+        'SELECT * FROM campaigns WHERE user_id = $1 ORDER BY created_at DESC',
+        [userId]
+      );
+      return result.rows;
+    } else {
+      const result = await pool.query('SELECT * FROM campaigns ORDER BY created_at DESC');
+      return result.rows;
+    }
   }
 
   static async getById(id: string): Promise<Campaign | null> {
@@ -17,9 +25,13 @@ export class CampaignModel {
     const id = uuidv4();
     const stopTime = campaignData.stop_time || Date.now() + (30 * 24 * 60 * 60 * 1000); // Default to 30 days from now
     
+    if (!campaignData.user_id) {
+      throw new Error('User ID is required to create a campaign');
+    }
+    
     const result = await pool.query(
-      'INSERT INTO campaigns (id, name, objective, status, stop_time) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-      [id, campaignData.name, campaignData.objective, 'ACTIVE', stopTime]
+      'INSERT INTO campaigns (id, name, objective, status, stop_time, user_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+      [id, campaignData.name, campaignData.objective, 'ACTIVE', stopTime, campaignData.user_id]
     );
     
     return result.rows[0];

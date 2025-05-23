@@ -1,5 +1,5 @@
 import React from 'react';
-import { Plus, RefreshCw, Zap } from 'lucide-react';
+import { RefreshCw, Zap } from 'lucide-react';
 import { useCampaigns, useUpdateCampaign } from '../hooks/useCampaigns';
 import { CampaignCard } from '../components/CampaignCard';
 import { ChatInterface } from '../components/ChatInterface';
@@ -47,8 +47,12 @@ export const Dashboard: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Campaign Manager</h1>
-              <p className="text-gray-600 mt-1">Manage your Facebook ad campaigns</p>
+              <h1 className="text-2xl font-bold text-gray-900">
+                Campaign Manager
+              </h1>
+              <p className="text-gray-600 mt-1">
+                Manage your Facebook ad campaigns
+              </p>
             </div>
             <button
               onClick={() => refetch()}
@@ -84,9 +88,12 @@ export const Dashboard: React.FC = () => {
             ) : (
               <div className="bg-white rounded-lg shadow-md border border-gray-200 p-8 text-center">
                 <Zap className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No campaigns yet</h3>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  No campaigns yet
+                </h3>
                 <p className="text-gray-600 mb-4">
-                  Get started by creating your first campaign using the AI assistant.
+                  Get started by creating your first campaign using the AI
+                  assistant.
                 </p>
               </div>
             )}

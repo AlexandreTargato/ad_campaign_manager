@@ -10,7 +10,8 @@ export class AIService {
   private static conversationContext: string[] = [];
 
   static async generateResponse(
-    userMessage: string
+    userMessage: string,
+    userId?: string
   ): Promise<{ content: string; campaignCreated?: any }> {
     try {
       // Add system context for campaign creation
@@ -80,7 +81,13 @@ Current conversation context: ${this.conversationContext.join('\n')}`;
 
         if (toolUse.name === 'create_campaign') {
           try {
-            const campaign = await CampaignModel.create(toolUse.input);
+            // Add user_id to campaign data if provided
+            const campaignData = {
+              ...toolUse.input,
+              user_id: userId,
+            };
+            
+            const campaign = await CampaignModel.create(campaignData);
             const response = `Great! I've successfully created your campaign "${campaign.name}" with objective ${campaign.objective}. The campaign is now active and ready to go!`;
 
             this.clearContext(); // Clear conversation after successful creation

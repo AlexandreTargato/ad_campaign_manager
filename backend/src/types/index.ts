@@ -31,9 +31,33 @@ export interface ChatMessage {
   timestamp: Date;
 }
 
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+  created_at?: Date;
+}
+
+export interface CreateUserRequest {
+  email: string;
+  password: string;
+  name: string;
+}
+
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface AuthResponse {
+  user: User;
+  token: string;
+}
+
 export interface CreateCampaignRequest {
   name: string;
   objective: Campaign["objective"];
   daily_budget: number;
   stop_time?: number;
+  user_id?: string;
 }

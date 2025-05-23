@@ -1,3 +1,17 @@
+DROP TABLE IF EXISTS users CASCADE;
+DROP TABLE IF EXISTS ads CASCADE;
+DROP TABLE IF EXISTS adsets CASCADE;
+DROP TABLE IF EXISTS campaigns CASCADE;
+
+-- Create users table
+CREATE TABLE IF NOT EXISTS users (
+    id VARCHAR(255) PRIMARY KEY,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Create campaigns table
 CREATE TABLE IF NOT EXISTS campaigns (
     id VARCHAR(255) PRIMARY KEY,
@@ -5,7 +19,9 @@ CREATE TABLE IF NOT EXISTS campaigns (
     objective VARCHAR(50) NOT NULL CHECK (objective IN ('OUTCOME_TRAFFIC', 'OUTCOME_AWARENESS', 'OUTCOME_ENGAGEMENT', 'OUTCOME_LEADS')),
     status VARCHAR(20) NOT NULL CHECK (status IN ('PAUSED', 'ACTIVE')),
     stop_time BIGINT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    user_id VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 -- Create adsets table
@@ -28,10 +44,15 @@ CREATE TABLE IF NOT EXISTS ads (
 );
 
 -- Insert sample data
-INSERT INTO campaigns (id, name, objective, status, stop_time) VALUES
-('camp_1', 'Holiday Sale Campaign', 'OUTCOME_TRAFFIC', 'ACTIVE', 1735689600),
-('camp_2', 'Brand Awareness Q1', 'OUTCOME_AWARENESS', 'ACTIVE', 1711929600),
-('camp_3', 'Lead Generation Campaign', 'OUTCOME_LEADS', 'PAUSED', 1714521600)
+-- First insert a demo user
+INSERT INTO users (id, email, password, name) VALUES
+('user_demo', 'demo@example.com', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Demo User')
+ON CONFLICT (email) DO NOTHING;
+
+INSERT INTO campaigns (id, name, objective, status, stop_time, user_id) VALUES
+('camp_1', 'Holiday Sale Campaign', 'OUTCOME_TRAFFIC', 'ACTIVE', 1735689600, 'user_demo'),
+('camp_2', 'Brand Awareness Q1', 'OUTCOME_AWARENESS', 'ACTIVE', 1711929600, 'user_demo'),
+('camp_3', 'Lead Generation Campaign', 'OUTCOME_LEADS', 'PAUSED', 1714521600, 'user_demo')
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO adsets (id, name, campaign_id, daily_budget) VALUES

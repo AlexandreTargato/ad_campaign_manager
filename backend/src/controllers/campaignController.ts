@@ -5,7 +5,9 @@ import { CreateCampaignRequest } from '../types';
 export class CampaignController {
   static async getAllCampaigns(req: Request, res: Response) {
     try {
-      const campaigns = await CampaignModel.getAll();
+      // If user is authenticated, only return their campaigns
+      const userId = req.user?.id;
+      const campaigns = await CampaignModel.getAll(userId);
       res.json(campaigns);
     } catch (error) {
       console.error('Error fetching campaigns:', error);
@@ -44,6 +46,15 @@ export class CampaignController {
       if (!validObjectives.includes(campaignData.objective)) {
         return res.status(400).json({ 
           error: 'Invalid campaign objective' 
+        });
+      }
+
+      // Add user_id from authenticated user
+      if (req.user) {
+        campaignData.user_id = req.user.id;
+      } else {
+        return res.status(401).json({
+          error: 'Authentication required to create campaigns',
         });
       }
 

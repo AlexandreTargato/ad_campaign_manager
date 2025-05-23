@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import { initDatabase } from "./database/connection";
 import campaignRoutes from "./routes/campaigns";
 import chatRoutes from "./routes/chat";
+import authRoutes from "./routes/auth";
 
 dotenv.config();
 
@@ -15,6 +16,7 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
+app.use("/api/auth", authRoutes);
 app.use("/api/campaigns", campaignRoutes);
 app.use("/api/chat", chatRoutes);
 

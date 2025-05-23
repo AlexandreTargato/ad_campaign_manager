@@ -22,6 +22,15 @@ export class ChatController {
           });
         }
 
+        // Add user_id from authenticated user if available
+        if (req.user) {
+          campaignData.user_id = req.user.id;
+        } else {
+          return res.status(401).json({
+            error: 'Authentication required to create campaigns',
+          });
+        }
+
         try {
           const campaign = await CampaignModel.create(campaignData);
           const response = `Great! I've successfully created your campaign "${campaign.name}" with objective ${campaign.objective}. The campaign is now active and ready to go!`;
@@ -50,7 +59,7 @@ export class ChatController {
       }
 
       // Generate AI response
-      const aiResponse = await AIService.generateResponse(message);
+      const aiResponse = await AIService.generateResponse(message, req.user?.id);
 
       const response: any = {
         id: uuidv4(),
