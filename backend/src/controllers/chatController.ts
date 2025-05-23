@@ -52,12 +52,18 @@ export class ChatController {
       // Generate AI response
       const aiResponse = await AIService.generateResponse(message);
 
-      res.json({
+      const response: any = {
         id: uuidv4(),
         role: 'assistant',
-        content: aiResponse,
+        content: aiResponse.content,
         timestamp: new Date(),
-      });
+      };
+
+      if (aiResponse.campaignCreated) {
+        response.campaignCreated = aiResponse.campaignCreated;
+      }
+
+      res.json(response);
     } catch (error) {
       console.error('Error handling chat message:', error);
       res.status(500).json({ error: 'Internal server error' });

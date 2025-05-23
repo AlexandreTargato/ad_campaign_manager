@@ -1,4 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk';
+import { CampaignModel } from '../models/Campaign';
+import { v4 as uuidv4 } from 'uuid';
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
@@ -7,26 +9,61 @@ const anthropic = new Anthropic({
 export class AIService {
   private static conversationContext: string[] = [];
 
-  static async generateResponse(userMessage: string): Promise<string> {
+  static async generateResponse(
+    userMessage: string
+  ): Promise<{ content: string; campaignCreated?: any }> {
     try {
       // Add system context for campaign creation
       const systemPrompt = `You are an AI assistant helping users create Facebook ad campaigns. 
-      
+
 Your goal is to guide users through creating a campaign by asking for:
 1. Campaign name
 2. Campaign objective (OUTCOME_TRAFFIC, OUTCOME_AWARENESS, OUTCOME_ENGAGEMENT, or OUTCOME_LEADS)
-3. Daily budget (in dollars)
-4. Campaign duration/end date
+3. Campaign duration/end date (optional, defaults to 30 days)
 
-Be conversational, helpful, and ask one question at a time. When you have all the information needed, 
-summarize the campaign details and ask for confirmation to create it.
+Be conversational, helpful, and ask one question at a time. When you have all the required information (name and objective), 
+use the create_campaign tool to create the campaign in the database.
 
 Current conversation context: ${this.conversationContext.join('\n')}`;
+
+      const tools = [
+        {
+          name: 'create_campaign',
+          description:
+            'Create a new ad campaign in the database when user provides name and objective',
+          input_schema: {
+            type: 'object' as const,
+            properties: {
+              name: {
+                type: 'string' as const,
+                description: 'The name of the campaign',
+              },
+              objective: {
+                type: 'string' as const,
+                enum: [
+                  'OUTCOME_TRAFFIC',
+                  'OUTCOME_AWARENESS',
+                  'OUTCOME_ENGAGEMENT',
+                  'OUTCOME_LEADS',
+                ],
+                description: 'The campaign objective',
+              },
+              stop_time: {
+                type: 'number' as const,
+                description:
+                  'Unix timestamp for when campaign should stop (optional)',
+              },
+            },
+            required: ['name', 'objective'],
+          },
+        },
+      ];
 
       const message = await anthropic.messages.create({
         model: 'claude-3-7-sonnet-20250219',
         max_tokens: 1000,
         system: systemPrompt,
+        tools,
         messages: [
           {
             role: 'user',
@@ -35,8 +72,38 @@ Current conversation context: ${this.conversationContext.join('\n')}`;
         ],
       });
 
-      const response =
-        message.content[0].type === 'text' ? message.content[0].text : '';
+      // Handle tool use
+      if (message.content.some((content) => content.type === 'tool_use')) {
+        const toolUse = message.content.find(
+          (content) => content.type === 'tool_use'
+        ) as any;
+
+        if (toolUse.name === 'create_campaign') {
+          try {
+            const campaign = await CampaignModel.create(toolUse.input);
+            const response = `Great! I've successfully created your campaign "${campaign.name}" with objective ${campaign.objective}. The campaign is now active and ready to go!`;
+
+            this.clearContext(); // Clear conversation after successful creation
+
+            return {
+              content: response,
+              campaignCreated: campaign,
+            };
+          } catch (error) {
+            console.error('Error creating campaign:', error);
+            return {
+              content:
+                'I apologize, but there was an error creating your campaign. Please try again or check the campaign details.',
+            };
+          }
+        }
+      }
+
+      // Regular text response
+      const response = message.content
+        .filter((content) => content.type === 'text')
+        .map((content) => (content as any).text)
+        .join('');
 
       // Update conversation context
       this.conversationContext.push(`User: ${userMessage}`);
@@ -47,10 +114,13 @@ Current conversation context: ${this.conversationContext.join('\n')}`;
         this.conversationContext = this.conversationContext.slice(-20);
       }
 
-      return response;
+      return { content: response };
     } catch (error) {
       console.error('Error generating AI response:', error);
-      return 'I apologize, but I encountered an error. Please try again or contact support if the issue persists.';
+      return {
+        content:
+          'I apologize, but I encountered an error. Please try again or contact support if the issue persists.',
+      };
     }
   }
 
