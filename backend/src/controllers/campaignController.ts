@@ -1,0 +1,91 @@
+import { Request, Response } from 'express';
+import { CampaignModel } from '../models/Campaign';
+import { CreateCampaignRequest } from '../types';
+
+export class CampaignController {
+  static async getAllCampaigns(req: Request, res: Response) {
+    try {
+      const campaigns = await CampaignModel.getAll();
+      res.json(campaigns);
+    } catch (error) {
+      console.error('Error fetching campaigns:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+  static async getCampaignById(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
+      const campaign = await CampaignModel.getById(id);
+      
+      if (!campaign) {
+        return res.status(404).json({ error: 'Campaign not found' });
+      }
+      
+      res.json(campaign);
+    } catch (error) {
+      console.error('Error fetching campaign:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+  static async createCampaign(req: Request, res: Response) {
+    try {
+      const campaignData: CreateCampaignRequest = req.body;
+      
+      // Basic validation
+      if (!campaignData.name || !campaignData.objective) {
+        return res.status(400).json({ 
+          error: 'Campaign name and objective are required' 
+        });
+      }
+
+      const validObjectives = ['OUTCOME_TRAFFIC', 'OUTCOME_AWARENESS', 'OUTCOME_ENGAGEMENT', 'OUTCOME_LEADS'];
+      if (!validObjectives.includes(campaignData.objective)) {
+        return res.status(400).json({ 
+          error: 'Invalid campaign objective' 
+        });
+      }
+
+      const campaign = await CampaignModel.create(campaignData);
+      res.status(201).json(campaign);
+    } catch (error) {
+      console.error('Error creating campaign:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+  static async updateCampaign(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
+      const updates = req.body;
+      
+      const campaign = await CampaignModel.update(id, updates);
+      
+      if (!campaign) {
+        return res.status(404).json({ error: 'Campaign not found' });
+      }
+      
+      res.json(campaign);
+    } catch (error) {
+      console.error('Error updating campaign:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+  static async deleteCampaign(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
+      const deleted = await CampaignModel.delete(id);
+      
+      if (!deleted) {
+        return res.status(404).json({ error: 'Campaign not found' });
+      }
+      
+      res.status(204).send();
+    } catch (error) {
+      console.error('Error deleting campaign:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+}
