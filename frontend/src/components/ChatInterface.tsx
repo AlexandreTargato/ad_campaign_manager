@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Send, MessageCircle, Trash2 } from 'lucide-react';
 import { useChat } from '../hooks/useChat';
-import { ChatMessage } from '../types';
 
 export const ChatInterface: React.FC = () => {
   const [input, setInput] = useState('');
@@ -25,9 +24,9 @@ export const ChatInterface: React.FC = () => {
   };
 
   const formatTimestamp = (timestamp: Date) => {
-    return new Date(timestamp).toLocaleTimeString([], { 
-      hour: '2-digit', 
-      minute: '2-digit' 
+    return new Date(timestamp).toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit',
     });
   };
 
@@ -53,8 +52,12 @@ export const ChatInterface: React.FC = () => {
         {messages.length === 0 && (
           <div className="text-center text-gray-500 mt-8">
             <MessageCircle className="w-12 h-12 mx-auto mb-3 text-gray-300" />
-            <p className="text-sm">Start a conversation to create a new campaign!</p>
-            <p className="text-xs mt-1">Try saying "I want to create a new campaign"</p>
+            <p className="text-sm">
+              Start a conversation to create a new campaign!
+            </p>
+            <p className="text-xs mt-1">
+              Try saying "I want to create a new campaign"
+            </p>
           </div>
         )}
 
@@ -89,10 +92,12 @@ export const ChatInterface: React.FC = () => {
                 <div className="text-sm text-green-800">
                   <strong>Campaign Created Successfully!</strong>
                   <div className="mt-1">
-                    <span className="font-medium">Name:</span> {message.campaignCreated.name}
+                    <span className="font-medium">Name:</span>{' '}
+                    {message.campaignCreated.name}
                   </div>
                   <div>
-                    <span className="font-medium">Objective:</span> {message.campaignCreated.objective}
+                    <span className="font-medium">Objective:</span>{' '}
+                    {message.campaignCreated.objective}
                   </div>
                 </div>
               </div>
@@ -106,8 +111,14 @@ export const ChatInterface: React.FC = () => {
               <div className="flex items-center space-x-2">
                 <div className="flex space-x-1">
                   <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                  <div
+                    className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                    style={{ animationDelay: '0.1s' }}
+                  ></div>
+                  <div
+                    className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                    style={{ animationDelay: '0.2s' }}
+                  ></div>
                 </div>
                 <span className="text-sm text-gray-500">AI is typing...</span>
               </div>
