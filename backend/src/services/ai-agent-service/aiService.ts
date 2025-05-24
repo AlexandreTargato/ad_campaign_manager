@@ -43,15 +43,11 @@ export class AIService {
         ],
       });
 
-      console.log({ message });
-
       // Handle tool use
       if (message.content.some((content) => content.type === 'tool_use')) {
         const toolUse = message.content.find(
           (content) => content.type === 'tool_use'
         ) as any;
-
-        console.log({ toolUse });
 
         try {
           const result = await executeToolFunction(

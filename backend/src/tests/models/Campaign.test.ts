@@ -77,6 +77,8 @@ describe('CampaignModel', () => {
         name: 'New Campaign',
         objective: 'OUTCOME_TRAFFIC' as const,
         daily_budget: 5000,
+        stop_time: Date.now() + 30 * 24 * 60 * 60 * 1000,
+        user_id: 'test-user-id',
       };
 
       const mockCreatedCampaign = {
@@ -86,6 +88,7 @@ describe('CampaignModel', () => {
         status: 'ACTIVE',
         stop_time: expect.any(Number),
         created_at: expect.any(Date),
+        user_id: campaignData.user_id,
       };
 
       mockQuery.mockResolvedValue({ rows: [mockCreatedCampaign] });
@@ -112,6 +115,7 @@ describe('CampaignModel', () => {
         objective: 'OUTCOME_TRAFFIC' as const,
         daily_budget: 5000,
         stop_time: stopTime,
+        user_id: 'test-user-id',
       };
 
       const mockCreatedCampaign = {

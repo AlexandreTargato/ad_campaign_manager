@@ -27,8 +27,9 @@ export class CampaignModel {
 
   static async create(campaignData: CreateCampaignRequest): Promise<Campaign> {
     const id = uuidv4();
-    const stopTime =
-      campaignData.stop_time || Date.now() + 30 * 24 * 60 * 60 * 1000; // Default to 30 days from now
+    const stopTime = campaignData.stop_time
+      ? new Date(campaignData.stop_time * 1000)
+      : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days from now
 
     if (!campaignData.user_id) {
       throw new Error('User ID is required to create a campaign');

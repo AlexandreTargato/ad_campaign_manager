@@ -60,8 +60,8 @@ export interface CreateCampaignRequest {
   name: string;
   objective: Campaign['objective'];
   daily_budget: number;
-  stop_time?: number;
-  user_id?: string;
+  stop_time: number;
+  user_id: string;
 }
 
 // Chat types

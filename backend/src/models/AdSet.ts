@@ -1,12 +1,6 @@
 import pool from '../database/connection';
 import { v4 as uuidv4 } from 'uuid';
-
-export interface AdSet {
-  id: string;
-  name: string;
-  campaign_id: string;
-  daily_budget: number;
-}
+import { AdSet } from '../types';
 
 export interface CreateAdSetRequest {
   name: string;

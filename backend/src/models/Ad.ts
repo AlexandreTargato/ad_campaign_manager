@@ -1,13 +1,6 @@
 import pool from '../database/connection';
 import { v4 as uuidv4 } from 'uuid';
-
-export interface Ad {
-  id: string;
-  name: string;
-  adset_id: string;
-  creative_id: string;
-  status: 'PAUSED' | 'ACTIVE';
-}
+import { Ad } from '../types';
 
 export interface CreateAdRequest {
   name: string;

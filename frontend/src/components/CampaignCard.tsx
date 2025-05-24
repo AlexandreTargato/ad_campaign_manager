@@ -21,6 +21,7 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
   onClick,
 }) => {
   const formatDate = (timestamp: number) => {
+    console.log({ timestamp });
     return new Date(timestamp).toLocaleDateString();
   };
 
@@ -88,7 +89,12 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
       </div>
 
       <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between">
-        <button className="text-blue-600 hover:text-blue-800 text-sm font-medium">
+        <button
+          className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+          onClick={() => {
+            onClick?.(campaign);
+          }}
+        >
           View Ad Sets →
         </button>
         {onStatusToggle && (
