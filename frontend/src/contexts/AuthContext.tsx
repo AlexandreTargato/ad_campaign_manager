@@ -1,6 +1,17 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from 'react';
 import { User, LoginRequest, CreateUserRequest } from '../types';
-import { authAPI, setAuthToken, clearAuthToken, getAuthToken } from '../services/api';
+import {
+  authAPI,
+  setAuthToken,
+  clearAuthToken,
+  getAuthToken,
+} from '../services/api';
 
 interface AuthContextType {
   user: User | null;

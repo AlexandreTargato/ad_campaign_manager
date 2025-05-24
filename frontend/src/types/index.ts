@@ -1,18 +1,40 @@
 export interface Campaign {
   id: string;
   name: string;
-  objective: "OUTCOME_TRAFFIC" | "OUTCOME_AWARENESS" | "OUTCOME_ENGAGEMENT" | "OUTCOME_LEADS";
-  status: "PAUSED" | "ACTIVE";
+  objective:
+    | 'OUTCOME_TRAFFIC'
+    | 'OUTCOME_AWARENESS'
+    | 'OUTCOME_ENGAGEMENT'
+    | 'OUTCOME_LEADS';
+  status: 'PAUSED' | 'ACTIVE';
   stop_time: number;
+  user_id: string;
   created_at?: string;
+}
+
+export interface AdSet {
+  id: string;
+  name: string;
+  campaign_id: string;
+  daily_budget: number;
+}
+
+export interface Ad {
+  id: string;
+  name: string;
+  adset_id: string;
+  creative_id: string;
+  status: 'PAUSED' | 'ACTIVE';
 }
 
 export interface ChatMessage {
   id: string;
-  role: "user" | "assistant";
+  role: 'user' | 'assistant';
   content: string;
   timestamp: Date;
   campaignCreated?: Campaign;
+  shouldRefresh?: boolean;
+  actionResult?: any;
 }
 
 export interface User {
@@ -41,7 +63,7 @@ export interface AuthResponse {
 
 export interface CreateCampaignRequest {
   name: string;
-  objective: Campaign["objective"];
+  objective: Campaign['objective'];
   daily_budget: number;
   stop_time?: number;
 }

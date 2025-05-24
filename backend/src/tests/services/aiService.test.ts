@@ -17,7 +17,7 @@ jest.mock('@anthropic-ai/sdk', () => {
   }));
 });
 
-import { AIService } from '../../services/aiService';
+import { AIService } from '../../services/ai-agent-service/aiService';
 
 describe('AIService', () => {
   beforeEach(() => {
@@ -38,9 +38,13 @@ describe('AIService', () => {
 
       mockMessagesCreate.mockResolvedValue(mockResponse);
 
-      const result = await AIService.generateResponse('I want to create a campaign');
+      const result = await AIService.generateResponse(
+        'I want to create a campaign'
+      );
 
-      expect(result.content).toBe('Hello! I can help you create ad campaigns. What would you like to name your campaign?');
+      expect(result.content).toBe(
+        'Hello! I can help you create ad campaigns. What would you like to name your campaign?'
+      );
       expect(result.campaignCreated).toBeUndefined();
     });
 
@@ -70,13 +74,17 @@ describe('AIService', () => {
       mockMessagesCreate.mockResolvedValue(mockToolResponse);
       mockCreate.mockResolvedValue(mockCreatedCampaign);
 
-      const result = await AIService.generateResponse('Create a Summer Sale campaign for traffic');
+      const result = await AIService.generateResponse(
+        'Create a Summer Sale campaign for traffic'
+      );
 
       expect(mockCreate).toHaveBeenCalledWith({
         name: 'Summer Sale',
         objective: 'OUTCOME_TRAFFIC',
       });
-      expect(result.content).toContain('successfully created your campaign "Summer Sale"');
+      expect(result.content).toContain(
+        'successfully created your campaign "Summer Sale"'
+      );
       expect(result.campaignCreated).toEqual(mockCreatedCampaign);
     });
 
@@ -123,12 +131,16 @@ describe('AIService', () => {
 
       mockMessagesCreate.mockResolvedValue(mockResponse);
 
-      await AIService.generateResponse('I want to create a campaign called "Test Campaign"');
+      await AIService.generateResponse(
+        'I want to create a campaign called "Test Campaign"'
+      );
       await AIService.generateResponse('What are the objective options?');
 
       // Check that the system prompt includes conversation context
       const createCalls = mockMessagesCreate.mock.calls;
-      expect(createCalls[1][0].system).toContain('User: I want to create a campaign called "Test Campaign"');
+      expect(createCalls[1][0].system).toContain(
+        'User: I want to create a campaign called "Test Campaign"'
+      );
     });
 
     it('should limit conversation context to 20 entries', async () => {
@@ -145,10 +157,13 @@ describe('AIService', () => {
 
       // The context should be trimmed to last 20 entries
       const lastCall = mockMessagesCreate.mock.calls.slice(-1)[0];
-      const contextLines = lastCall[0].system.split('\n').filter((line: string) => 
-        line.startsWith('User:') || line.startsWith('Assistant:')
-      );
-      
+      const contextLines = lastCall[0].system
+        .split('\n')
+        .filter(
+          (line: string) =>
+            line.startsWith('User:') || line.startsWith('Assistant:')
+        );
+
       expect(contextLines.length).toBeLessThanOrEqual(20);
     });
   });
@@ -163,13 +178,13 @@ describe('AIService', () => {
 
       // Add some context
       await AIService.generateResponse('Hello');
-      
+
       // Clear context
       AIService.clearContext();
-      
+
       // Next call should have empty context
       await AIService.generateResponse('New conversation');
-      
+
       const lastCall = mockMessagesCreate.mock.calls.slice(-1)[0];
       expect(lastCall[0].system).not.toContain('User: Hello');
     });
@@ -179,42 +194,42 @@ describe('AIService', () => {
     it('should extract traffic objective', () => {
       const conversation = ['I want to drive traffic to my website'];
       const result = AIService.extractCampaignData(conversation);
-      
+
       expect(result.objective).toBe('OUTCOME_TRAFFIC');
     });
 
     it('should extract awareness objective', () => {
       const conversation = ['I want to increase brand awareness'];
       const result = AIService.extractCampaignData(conversation);
-      
+
       expect(result.objective).toBe('OUTCOME_AWARENESS');
     });
 
     it('should extract engagement objective', () => {
       const conversation = ['I want more likes and comments'];
       const result = AIService.extractCampaignData(conversation);
-      
+
       expect(result.objective).toBe('OUTCOME_ENGAGEMENT');
     });
 
     it('should extract leads objective', () => {
       const conversation = ['I want to generate leads'];
       const result = AIService.extractCampaignData(conversation);
-      
+
       expect(result.objective).toBe('OUTCOME_LEADS');
     });
 
     it('should extract budget from conversation', () => {
       const conversation = ['My budget is $50 per day'];
       const result = AIService.extractCampaignData(conversation);
-      
+
       expect(result.daily_budget).toBe(5000); // $50 in cents
     });
 
     it('should handle budget without dollar sign', () => {
       const conversation = ['I can spend 25 dollars daily'];
       const result = AIService.extractCampaignData(conversation);
-      
+
       expect(result.daily_budget).toBe(2500); // $25 in cents
     });
   });

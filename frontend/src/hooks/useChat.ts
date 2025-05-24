@@ -8,17 +8,28 @@ export const useChat = () => {
   const queryClient = useQueryClient();
 
   const sendMessageMutation = useMutation({
-    mutationFn: ({ message, action, campaignData }: { 
-      message: string; 
-      action?: string; 
-      campaignData?: any 
-    }) => chatAPI.sendMessage(message, action, campaignData),
+    mutationFn: ({
+      message,
+      action,
+      campaignData,
+      context,
+      contextData,
+    }: {
+      message: string;
+      action?: string;
+      campaignData?: any;
+      context?: string;
+      contextData?: any;
+    }) =>
+      chatAPI.sendMessage(message, action, campaignData, context, contextData),
     onSuccess: (response) => {
-      setMessages(prev => [...prev, response]);
-      
-      // If a campaign was created, refresh the campaigns list
-      if (response.campaignCreated) {
+      setMessages((prev) => [...prev, response]);
+
+      // If a tool was executed that requires refresh, invalidate all queries
+      if (response.shouldRefresh) {
         queryClient.invalidateQueries({ queryKey: ['campaigns'] });
+        queryClient.invalidateQueries({ queryKey: ['adsets'] });
+        queryClient.invalidateQueries({ queryKey: ['ads'] });
       }
     },
   });
@@ -30,7 +41,13 @@ export const useChat = () => {
     },
   });
 
-  const sendMessage = (content: string, action?: string, campaignData?: any) => {
+  const sendMessage = (
+    content: string,
+    action?: string,
+    campaignData?: any,
+    context?: string,
+    contextData?: any
+  ) => {
     // Add user message immediately
     const userMessage: ChatMessage = {
       id: Date.now().toString(),
@@ -38,10 +55,16 @@ export const useChat = () => {
       content,
       timestamp: new Date(),
     };
-    setMessages(prev => [...prev, userMessage]);
+    setMessages((prev) => [...prev, userMessage]);
 
     // Send to API
-    sendMessageMutation.mutate({ message: content, action, campaignData });
+    sendMessageMutation.mutate({
+      message: content,
+      action,
+      campaignData,
+      context,
+      contextData,
+    });
   };
 
   const clearMessages = () => {

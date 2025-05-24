@@ -3,6 +3,8 @@ import cors from "cors";
 import dotenv from "dotenv";
 import { initDatabase } from "./database/connection";
 import campaignRoutes from "./routes/campaigns";
+import adsetRoutes from "./routes/adsets";
+import adRoutes from "./routes/ads";
 import chatRoutes from "./routes/chat";
 import authRoutes from "./routes/auth";
 
@@ -18,6 +20,8 @@ app.use(express.json());
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/campaigns", campaignRoutes);
+app.use("/api/adsets", adsetRoutes);
+app.use("/api/ads", adRoutes);
 app.use("/api/chat", chatRoutes);
 
 // Health check

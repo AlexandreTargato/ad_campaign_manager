@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { RefreshCw, Zap } from 'lucide-react';
 import { useCampaigns, useUpdateCampaign } from '../hooks/useCampaigns';
 import { CampaignCard } from '../components/CampaignCard';
@@ -6,11 +7,16 @@ import { ChatInterface } from '../components/ChatInterface';
 import { Campaign } from '../types';
 
 export const Dashboard: React.FC = () => {
+  const navigate = useNavigate();
   const { data: campaigns, isLoading, error, refetch } = useCampaigns();
   const updateCampaignMutation = useUpdateCampaign();
 
   const handleStatusToggle = (id: string, newStatus: Campaign['status']) => {
     updateCampaignMutation.mutate({ id, updates: { status: newStatus } });
+  };
+
+  const handleCampaignClick = (campaign: Campaign) => {
+    navigate(`/campaigns/${campaign.id}/adsets`);
   };
 
   if (isLoading) {
@@ -65,6 +71,7 @@ export const Dashboard: React.FC = () => {
                     key={campaign.id}
                     campaign={campaign}
                     onStatusToggle={handleStatusToggle}
+                    onClick={handleCampaignClick}
                   />
                 ))}
               </div>
@@ -92,7 +99,7 @@ export const Dashboard: React.FC = () => {
                 Chat with our AI to create new campaigns quickly and easily.
               </p>
             </div>
-            <ChatInterface />
+            <ChatInterface context={{ type: 'campaigns', data: campaigns }} />
           </div>
         </div>
       </div>

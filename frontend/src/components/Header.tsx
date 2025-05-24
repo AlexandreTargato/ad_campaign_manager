@@ -13,7 +13,7 @@ const Header: React.FC = () => {
               Ad Campaign Manager
             </h1>
           </div>
-          
+
           <div className="flex items-center space-x-4">
             {user && (
               <>

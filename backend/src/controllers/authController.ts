@@ -38,7 +38,7 @@ export class AuthController {
       });
     } catch (error: any) {
       console.error('Registration error:', error);
-      
+
       if (error.message === 'User with this email already exists') {
         res.status(409).json({ error: error.message });
         return;
@@ -67,7 +67,7 @@ export class AuthController {
       });
     } catch (error: any) {
       console.error('Login error:', error);
-      
+
       if (error.message === 'Invalid email or password') {
         res.status(401).json({ error: error.message });
         return;

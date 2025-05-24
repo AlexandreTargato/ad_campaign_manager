@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Campaign, CreateCampaignRequest, ChatMessage, LoginRequest, CreateUserRequest, AuthResponse, User } from '../types';
+import { Campaign, CreateCampaignRequest, ChatMessage, LoginRequest, CreateUserRequest, AuthResponse, User, AdSet, Ad } from '../types';
 
 const api = axios.create({
   baseURL: '/api',
@@ -76,9 +76,43 @@ export const authAPI = {
     api.post('/auth/refresh').then(res => res.data),
 };
 
+export const adsetAPI = {
+  getByCampaignId: (campaignId: string): Promise<AdSet[]> => 
+    api.get(`/campaigns/${campaignId}/adsets`).then(res => res.data),
+  
+  getById: (id: string): Promise<AdSet> => 
+    api.get(`/adsets/${id}`).then(res => res.data),
+  
+  create: (adsetData: Omit<AdSet, 'id'>): Promise<AdSet> => 
+    api.post('/adsets', adsetData).then(res => res.data),
+  
+  update: (id: string, updates: Partial<AdSet>): Promise<AdSet> => 
+    api.put(`/adsets/${id}`, updates).then(res => res.data),
+  
+  delete: (id: string): Promise<void> => 
+    api.delete(`/adsets/${id}`).then(res => res.data),
+};
+
+export const adAPI = {
+  getByAdsetId: (adsetId: string): Promise<Ad[]> => 
+    api.get(`/adsets/${adsetId}/ads`).then(res => res.data),
+  
+  getById: (id: string): Promise<Ad> => 
+    api.get(`/ads/${id}`).then(res => res.data),
+  
+  create: (adData: Omit<Ad, 'id'>): Promise<Ad> => 
+    api.post('/ads', adData).then(res => res.data),
+  
+  update: (id: string, updates: Partial<Ad>): Promise<Ad> => 
+    api.put(`/ads/${id}`, updates).then(res => res.data),
+  
+  delete: (id: string): Promise<void> => 
+    api.delete(`/ads/${id}`).then(res => res.data),
+};
+
 export const chatAPI = {
-  sendMessage: (message: string, action?: string, campaignData?: any): Promise<ChatMessage> => 
-    api.post('/chat', { message, action, campaignData }).then(res => res.data),
+  sendMessage: (message: string, action?: string, campaignData?: any, context?: string, contextData?: any): Promise<ChatMessage> => 
+    api.post('/chat', { message, action, campaignData, context, contextData }).then(res => res.data),
   
   clearContext: (): Promise<void> => 
     api.delete('/chat/context').then(res => res.data),

@@ -2,7 +2,16 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Send, MessageCircle, Trash2 } from 'lucide-react';
 import { useChat } from '../hooks/useChat';
 
-export const ChatInterface: React.FC = () => {
+interface ChatInterfaceProps {
+  context?: {
+    type: 'campaigns' | 'adsets' | 'ads';
+    data?: any;
+    campaignId?: string;
+    adsetId?: string;
+  };
+}
+
+export const ChatInterface: React.FC<ChatInterfaceProps> = ({ context }) => {
   const [input, setInput] = useState('');
   const { messages, sendMessage, clearMessages, isLoading } = useChat();
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -19,7 +28,7 @@ export const ChatInterface: React.FC = () => {
     e.preventDefault();
     if (!input.trim() || isLoading) return;
 
-    sendMessage(input.trim());
+    sendMessage(input.trim(), undefined, undefined, context?.type, context);
     setInput('');
   };
 
@@ -86,19 +95,14 @@ export const ChatInterface: React.FC = () => {
               </div>
             </div>
 
-            {/* Show campaign creation success */}
-            {message.campaignCreated && (
+            {/* Show action result */}
+            {message.actionResult && (
               <div className="bg-green-50 border border-green-200 rounded-lg p-3">
                 <div className="text-sm text-green-800">
-                  <strong>Campaign Created Successfully!</strong>
-                  <div className="mt-1">
-                    <span className="font-medium">Name:</span>{' '}
-                    {message.campaignCreated.name}
-                  </div>
-                  <div>
-                    <span className="font-medium">Objective:</span>{' '}
-                    {message.campaignCreated.objective}
-                  </div>
+                  <strong>Action Result:</strong>
+                  <pre className="mt-1 whitespace-pre-wrap font-mono text-xs">
+                    {JSON.stringify(message.actionResult, null, 2)}
+                  </pre>
                 </div>
               </div>
             )}
@@ -132,18 +136,26 @@ export const ChatInterface: React.FC = () => {
       {/* Input */}
       <form onSubmit={handleSubmit} className="p-4 border-t border-gray-200">
         <div className="flex space-x-2">
-          <input
-            type="text"
+          <textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Type your message..."
-            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                if (input.trim() && !isLoading) {
+                  handleSubmit(e);
+                }
+              }
+            }}
+            placeholder="Type your message... (Shift+Enter for new line)"
+            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none min-h-[80px] max-h-[160px]"
             disabled={isLoading}
+            rows={2}
           />
           <button
             type="submit"
             disabled={!input.trim() || isLoading}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors self-end"
           >
             <Send className="w-4 h-4" />
           </button>

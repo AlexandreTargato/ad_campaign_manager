@@ -19,11 +19,11 @@ export class CampaignController {
     try {
       const { id } = req.params;
       const campaign = await CampaignModel.getById(id);
-      
+
       if (!campaign) {
         return res.status(404).json({ error: 'Campaign not found' });
       }
-      
+
       res.json(campaign);
     } catch (error) {
       console.error('Error fetching campaign:', error);
@@ -34,18 +34,23 @@ export class CampaignController {
   static async createCampaign(req: Request, res: Response) {
     try {
       const campaignData: CreateCampaignRequest = req.body;
-      
+
       // Basic validation
       if (!campaignData.name || !campaignData.objective) {
-        return res.status(400).json({ 
-          error: 'Campaign name and objective are required' 
+        return res.status(400).json({
+          error: 'Campaign name and objective are required',
         });
       }
 
-      const validObjectives = ['OUTCOME_TRAFFIC', 'OUTCOME_AWARENESS', 'OUTCOME_ENGAGEMENT', 'OUTCOME_LEADS'];
+      const validObjectives = [
+        'OUTCOME_TRAFFIC',
+        'OUTCOME_AWARENESS',
+        'OUTCOME_ENGAGEMENT',
+        'OUTCOME_LEADS',
+      ];
       if (!validObjectives.includes(campaignData.objective)) {
-        return res.status(400).json({ 
-          error: 'Invalid campaign objective' 
+        return res.status(400).json({
+          error: 'Invalid campaign objective',
         });
       }
 
@@ -70,13 +75,13 @@ export class CampaignController {
     try {
       const { id } = req.params;
       const updates = req.body;
-      
+
       const campaign = await CampaignModel.update(id, updates);
-      
+
       if (!campaign) {
         return res.status(404).json({ error: 'Campaign not found' });
       }
-      
+
       res.json(campaign);
     } catch (error) {
       console.error('Error updating campaign:', error);
@@ -88,11 +93,11 @@ export class CampaignController {
     try {
       const { id } = req.params;
       const deleted = await CampaignModel.delete(id);
-      
+
       if (!deleted) {
         return res.status(404).json({ error: 'Campaign not found' });
       }
-      
+
       res.status(204).send();
     } catch (error) {
       console.error('Error deleting campaign:', error);

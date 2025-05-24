@@ -1,6 +1,9 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { Dashboard } from './pages/Dashboard';
+import { AdSetsPage } from './pages/AdSetsPage';
+import { AdsPage } from './pages/AdsPage';
 import AuthPage from './pages/AuthPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import Header from './components/Header';
@@ -36,7 +39,11 @@ const AppContent = () => {
     <ProtectedRoute>
       <div className="min-h-screen bg-gray-100">
         <Header />
-        <Dashboard />
+        <Routes>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/campaigns/:campaignId/adsets" element={<AdSetsPage />} />
+          <Route path="/adsets/:adsetId/ads" element={<AdsPage />} />
+        </Routes>
       </div>
     </ProtectedRoute>
   );
@@ -45,11 +52,13 @@ const AppContent = () => {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <div className="App">
-          <AppContent />
-        </div>
-      </AuthProvider>
+      <Router>
+        <AuthProvider>
+          <div className="App">
+            <AppContent />
+          </div>
+        </AuthProvider>
+      </Router>
     </QueryClientProvider>
   );
 }

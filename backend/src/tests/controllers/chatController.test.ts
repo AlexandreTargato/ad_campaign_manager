@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { ChatController } from '../../controllers/chatController';
-import { AIService } from '../../services/aiService';
+import { AIService } from '../../services/ai-agent-service/aiService';
 import { CampaignModel } from '../../models/Campaign';
 
 // Mock dependencies
@@ -78,7 +78,7 @@ describe('ChatController', () => {
       mockAIService.generateResponse.mockResolvedValue({
         content:
           'Great! I\'ve successfully created your campaign "Summer Sale"',
-        campaignCreated: mockCampaign,
+        actionResult: mockCampaign,
       });
 
       await ChatController.handleChatMessage(
