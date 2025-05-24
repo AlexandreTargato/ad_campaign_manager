@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Campaign, CreateCampaignRequest, ChatMessage, LoginRequest, CreateUserRequest, AuthResponse, User, AdSet, Ad } from '../types';
+import { Campaign, CreateCampaignRequest, ChatMessage, LoginRequest, CreateUserRequest, AuthResponse, User, AdSet, Ad, ChatResponse } from '../types';
 
 const api = axios.create({
   baseURL: '/api',
@@ -111,7 +111,7 @@ export const adAPI = {
 };
 
 export const chatAPI = {
-  sendMessage: (message: string, action?: string, campaignData?: any, context?: string, contextData?: any): Promise<ChatMessage> => 
+  sendMessage: (message: string, action?: string, campaignData?: any, context?: string, contextData?: any): Promise<ChatResponse> => 
     api.post('/chat', { message, action, campaignData, context, contextData }).then(res => res.data),
   
   clearContext: (): Promise<void> => 

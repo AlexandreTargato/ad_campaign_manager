@@ -2,11 +2,12 @@ import { Request, Response } from 'express';
 import { AIService } from '../services/ai-agent-service/aiService';
 import { CampaignModel } from '../models/Campaign';
 import { v4 as uuidv4 } from 'uuid';
+import { ChatRequest, ChatResponse } from '../types';
 
 export class ChatController {
   static async handleChatMessage(req: Request, res: Response) {
     try {
-      const { message, action, context, contextData } = req.body;
+      const { message, action, context, contextData }: ChatRequest = req.body;
 
       if (!message) {
         return res.status(400).json({ error: 'Message is required' });
@@ -16,11 +17,11 @@ export class ChatController {
       const aiResponse = await AIService.generateResponse(
         message,
         req.user?.id,
-        context || 'campaigns',
+        (context as any) || 'campaigns',
         contextData
       );
 
-      const response: any = {
+      const response: ChatResponse = {
         id: uuidv4(),
         role: 'assistant',
         content: aiResponse.content,

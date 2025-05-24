@@ -1,8 +1,9 @@
 import { CampaignModel } from '../../models/Campaign';
 import { AdSetModel } from '../../models/AdSet';
 import { AdModel } from '../../models/Ad';
+import { ToolContext } from '../../types';
 
-export type ToolContext = 'campaigns' | 'adsets' | 'ads';
+export { ToolContext };
 
 // Campaign Tools
 export const campaignTools = [

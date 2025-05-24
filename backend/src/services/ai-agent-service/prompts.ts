@@ -1,4 +1,4 @@
-import { ToolContext } from './tools';
+import { ToolContext } from '../../types';
 
 export class PromptService {
   static getSystemPrompt(

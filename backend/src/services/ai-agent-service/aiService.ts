@@ -1,6 +1,7 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { getToolsForContext, executeToolFunction, ToolContext } from './tools';
 import { PromptService } from './prompts';
+import { AIServiceResponse } from '../../types';
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
@@ -14,7 +15,7 @@ export class AIService {
     userId?: string,
     context: ToolContext = 'campaigns',
     contextData?: any
-  ): Promise<{ content: string; actionResult?: any; shouldRefresh?: boolean }> {
+  ): Promise<AIServiceResponse> {
     try {
       const contextKey = userId || 'anonymous';
       const currentContext = this.conversationContext.get(contextKey) || [];

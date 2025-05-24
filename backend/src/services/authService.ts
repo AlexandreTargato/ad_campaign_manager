@@ -37,6 +37,7 @@ export class AuthService {
     return {
       user,
       token,
+      message: 'User registered successfully',
     };
   }
 
@@ -63,6 +64,7 @@ export class AuthService {
     return {
       user,
       token,
+      message: 'Login successful',
     };
   }
 

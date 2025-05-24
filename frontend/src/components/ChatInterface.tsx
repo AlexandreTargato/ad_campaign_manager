@@ -1,14 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Send, MessageCircle, Trash2 } from 'lucide-react';
 import { useChat } from '../hooks/useChat';
+import { ChatContextData } from '../types';
 
 interface ChatInterfaceProps {
-  context?: {
-    type: 'campaigns' | 'adsets' | 'ads';
-    data?: any;
-    campaignId?: string;
-    adsetId?: string;
-  };
+  context?: ChatContextData;
 }
 
 export const ChatInterface: React.FC<ChatInterfaceProps> = ({ context }) => {

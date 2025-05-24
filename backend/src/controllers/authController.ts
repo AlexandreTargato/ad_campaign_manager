@@ -3,20 +3,20 @@ import { AuthService } from '../services/authService';
 import { CreateUserRequest, LoginRequest } from '../types';
 
 export class AuthController {
-  static async register(req: Request, res: Response): Promise<void> {
+  static async register(request: Request, response: Response): Promise<void> {
     try {
-      const { email, password, name }: CreateUserRequest = req.body;
+      const { email, password, name }: CreateUserRequest = request.body;
 
       // Basic validation
       if (!email || !password || !name) {
-        res.status(400).json({
+        response.status(400).json({
           error: 'Email, password, and name are required',
         });
         return;
       }
 
       if (password.length < 6) {
-        res.status(400).json({
+        response.status(400).json({
           error: 'Password must be at least 6 characters long',
         });
         return;
@@ -24,7 +24,7 @@ export class AuthController {
 
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(email)) {
-        res.status(400).json({
+        response.status(400).json({
           error: 'Please provide a valid email address',
         });
         return;
@@ -32,28 +32,25 @@ export class AuthController {
 
       const result = await AuthService.register({ email, password, name });
 
-      res.status(201).json({
-        message: 'User created successfully',
-        ...result,
-      });
+      response.status(201).json(result);
     } catch (error: any) {
       console.error('Registration error:', error);
 
       if (error.message === 'User with this email already exists') {
-        res.status(409).json({ error: error.message });
+        response.status(409).json({ error: error.message });
         return;
       }
 
-      res.status(500).json({ error: 'Internal server error' });
+      response.status(500).json({ error: 'Internal server error' });
     }
   }
 
-  static async login(req: Request, res: Response): Promise<void> {
+  static async login(request: Request, response: Response): Promise<void> {
     try {
-      const { email, password }: LoginRequest = req.body;
+      const { email, password }: LoginRequest = request.body;
 
       if (!email || !password) {
-        res.status(400).json({
+        response.status(400).json({
           error: 'Email and password are required',
         });
         return;
@@ -61,50 +58,50 @@ export class AuthController {
 
       const result = await AuthService.login({ email, password });
 
-      res.json({
-        message: 'Login successful',
-        ...result,
-      });
+      response.json(result);
     } catch (error: any) {
       console.error('Login error:', error);
 
       if (error.message === 'Invalid email or password') {
-        res.status(401).json({ error: error.message });
+        response.status(401).json({ error: error.message });
         return;
       }
 
-      res.status(500).json({ error: 'Internal server error' });
+      response.status(500).json({ error: 'Internal server error' });
     }
   }
 
-  static async getProfile(req: Request, res: Response): Promise<void> {
+  static async getProfile(request: Request, response: Response): Promise<void> {
     try {
       // User is attached to request by auth middleware
-      res.json({
-        user: req.user,
+      response.json({
+        user: request.user,
       });
     } catch (error) {
       console.error('Get profile error:', error);
-      res.status(500).json({ error: 'Internal server error' });
+      response.status(500).json({ error: 'Internal server error' });
     }
   }
 
-  static async refreshToken(req: Request, res: Response): Promise<void> {
+  static async refreshToken(
+    request: Request,
+    response: Response
+  ): Promise<void> {
     try {
-      if (!req.user) {
-        res.status(401).json({ error: 'User not authenticated' });
+      if (!request.user) {
+        response.status(401).json({ error: 'User not authenticated' });
         return;
       }
 
-      const newToken = AuthService.generateToken(req.user.id);
+      const newToken = AuthService.generateToken(request.user.id);
 
-      res.json({
+      response.json({
         token: newToken,
-        user: req.user,
+        user: request.user,
       });
     } catch (error) {
       console.error('Refresh token error:', error);
-      res.status(500).json({ error: 'Internal server error' });
+      response.status(500).json({ error: 'Internal server error' });
     }
   }
 }
