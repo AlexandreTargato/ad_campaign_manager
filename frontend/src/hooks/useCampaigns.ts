@@ -19,9 +19,10 @@ export const useCampaign = (id: string) => {
 
 export const useCreateCampaign = () => {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
-    mutationFn: (campaign: CreateCampaignRequest) => campaignAPI.create(campaign),
+    mutationFn: (campaign: CreateCampaignRequest) =>
+      campaignAPI.create(campaign),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['campaigns'] });
     },
@@ -30,9 +31,9 @@ export const useCreateCampaign = () => {
 
 export const useUpdateCampaign = () => {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
-    mutationFn: ({ id, updates }: { id: string; updates: Partial<Campaign> }) => 
+    mutationFn: ({ id, updates }: { id: string; updates: Partial<Campaign> }) =>
       campaignAPI.update(id, updates),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['campaigns'] });
@@ -42,7 +43,7 @@ export const useUpdateCampaign = () => {
 
 export const useDeleteCampaign = () => {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: (id: string) => campaignAPI.delete(id),
     onSuccess: () => {

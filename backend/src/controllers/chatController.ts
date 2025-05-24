@@ -1,62 +1,44 @@
 import { Request, Response } from 'express';
-import { AIService } from '../services/aiService';
+import { AIService } from '../services/ai-agent-service/aiService';
 import { CampaignModel } from '../models/Campaign';
 import { v4 as uuidv4 } from 'uuid';
+import { ChatRequest, ChatResponse } from '../types';
 
 export class ChatController {
   static async handleChatMessage(req: Request, res: Response) {
     try {
-      const { message, action } = req.body;
-      
+      const { message, action, context, contextData }: ChatRequest = req.body;
+
       if (!message) {
         return res.status(400).json({ error: 'Message is required' });
       }
 
-      // Handle campaign creation action
-      if (action === 'create_campaign') {
-        const { campaignData } = req.body;
-        
-        if (!campaignData || !campaignData.name || !campaignData.objective) {
-          return res.status(400).json({ 
-            error: 'Campaign name and objective are required' 
-          });
-        }
+      // Generate AI response with context
+      const aiResponse = await AIService.generateResponse(
+        message,
+        req.user?.id,
+        (context as any) || 'campaigns',
+        contextData
+      );
 
-        try {
-          const campaign = await CampaignModel.create(campaignData);
-          const response = `Great! I've successfully created your campaign "${campaign.name}" with objective ${campaign.objective}. The campaign is now active and ready to go!`;
-          
-          AIService.clearContext(); // Clear conversation after successful creation
-          
-          return res.json({
-            id: uuidv4(),
-            role: 'assistant',
-            content: response,
-            timestamp: new Date(),
-            campaignCreated: campaign
-          });
-        } catch (error) {
-          console.error('Error creating campaign via chat:', error);
-          const errorResponse = 'I apologize, but there was an error creating your campaign. Please try again or check the campaign details.';
-          
-          return res.json({
-            id: uuidv4(),
-            role: 'assistant',
-            content: errorResponse,
-            timestamp: new Date()
-          });
-        }
-      }
-
-      // Generate AI response
-      const aiResponse = await AIService.generateResponse(message);
-      
-      res.json({
+      const response: ChatResponse = {
         id: uuidv4(),
         role: 'assistant',
-        content: aiResponse,
-        timestamp: new Date()
-      });
+        content: aiResponse.content,
+        timestamp: new Date(),
+      };
+
+      // Include any action results (created items, etc.)
+      if (aiResponse.actionResult) {
+        response.actionResult = aiResponse.actionResult;
+      }
+
+      // Include refresh flag
+      if (aiResponse.shouldRefresh) {
+        response.shouldRefresh = true;
+      }
+
+      res.json(response);
     } catch (error) {
       console.error('Error handling chat message:', error);
       res.status(500).json({ error: 'Internal server error' });
