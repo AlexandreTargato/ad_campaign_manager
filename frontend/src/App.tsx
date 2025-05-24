@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { Dashboard } from './pages/Dashboard';
 import { AdSetsPage } from './pages/AdSetsPage';
@@ -41,7 +41,10 @@ const AppContent = () => {
         <Header />
         <Routes>
           <Route path="/" element={<Dashboard />} />
-          <Route path="/campaigns/:campaignId/adsets" element={<AdSetsPage />} />
+          <Route
+            path="/campaigns/:campaignId/adsets"
+            element={<AdSetsPage />}
+          />
           <Route path="/adsets/:adsetId/ads" element={<AdsPage />} />
         </Routes>
       </div>
