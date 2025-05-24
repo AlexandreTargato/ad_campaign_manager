@@ -43,20 +43,6 @@ export class AdController {
     try {
       const adData: CreateAdRequest = req.body;
 
-      // Basic validation
-      if (!adData.name || !adData.adset_id || !adData.creative_id) {
-        return res.status(400).json({
-          error: 'Ad name, adset_id, and creative_id are required',
-        });
-      }
-
-      // Validate status if provided
-      if (adData.status && !['ACTIVE', 'PAUSED'].includes(adData.status)) {
-        return res.status(400).json({
-          error: 'Status must be either ACTIVE or PAUSED',
-        });
-      }
-
       const ad = await AdModel.create(adData);
       res.status(201).json(ad);
     } catch (error) {
@@ -69,13 +55,6 @@ export class AdController {
     try {
       const { id } = req.params;
       const updates = req.body;
-
-      // Validate status if provided
-      if (updates.status && !['ACTIVE', 'PAUSED'].includes(updates.status)) {
-        return res.status(400).json({
-          error: 'Status must be either ACTIVE or PAUSED',
-        });
-      }
 
       const ad = await AdModel.update(id, updates);
 

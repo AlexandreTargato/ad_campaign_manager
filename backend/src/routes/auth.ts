@@ -1,12 +1,14 @@
 import { Router } from 'express';
 import { AuthController } from '../controllers/authController';
 import { authenticateToken } from '../middleware/auth';
+import { validateBody } from '../middleware/validation';
+import { loginSchema, registerSchema } from '../schemas';
 
 const router = Router();
 
 // Public routes
-router.post('/register', AuthController.register);
-router.post('/login', AuthController.login);
+router.post('/register', validateBody(registerSchema), AuthController.register);
+router.post('/login', validateBody(loginSchema), AuthController.login);
 
 // Protected routes
 router.get('/profile', authenticateToken, AuthController.getProfile);

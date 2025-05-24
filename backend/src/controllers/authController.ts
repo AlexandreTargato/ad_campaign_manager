@@ -7,29 +7,6 @@ export class AuthController {
     try {
       const { email, password, name }: CreateUserRequest = request.body;
 
-      // Basic validation
-      if (!email || !password || !name) {
-        response.status(400).json({
-          error: 'Email, password, and name are required',
-        });
-        return;
-      }
-
-      if (password.length < 6) {
-        response.status(400).json({
-          error: 'Password must be at least 6 characters long',
-        });
-        return;
-      }
-
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(email)) {
-        response.status(400).json({
-          error: 'Please provide a valid email address',
-        });
-        return;
-      }
-
       const result = await AuthService.register({ email, password, name });
 
       response.status(201).json(result);
@@ -48,13 +25,6 @@ export class AuthController {
   static async login(request: Request, response: Response): Promise<void> {
     try {
       const { email, password }: LoginRequest = request.body;
-
-      if (!email || !password) {
-        response.status(400).json({
-          error: 'Email and password are required',
-        });
-        return;
-      }
 
       const result = await AuthService.login({ email, password });
 

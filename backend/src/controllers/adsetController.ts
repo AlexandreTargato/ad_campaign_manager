@@ -43,23 +43,6 @@ export class AdSetController {
     try {
       const adsetData: CreateAdSetRequest = req.body;
 
-      // Basic validation
-      if (
-        !adsetData.name ||
-        !adsetData.campaign_id ||
-        typeof adsetData.daily_budget !== 'number'
-      ) {
-        return res.status(400).json({
-          error: 'AdSet name, campaign_id, and daily_budget are required',
-        });
-      }
-
-      if (adsetData.daily_budget <= 0) {
-        return res.status(400).json({
-          error: 'Daily budget must be greater than 0',
-        });
-      }
-
       const adset = await AdSetModel.create(adsetData);
       res.status(201).json(adset);
     } catch (error) {
@@ -72,16 +55,6 @@ export class AdSetController {
     try {
       const { id } = req.params;
       const updates = req.body;
-
-      // Validate daily_budget if provided
-      if (
-        updates.daily_budget !== undefined &&
-        (typeof updates.daily_budget !== 'number' || updates.daily_budget <= 0)
-      ) {
-        return res.status(400).json({
-          error: 'Daily budget must be a positive number',
-        });
-      }
 
       const adset = await AdSetModel.update(id, updates);
 

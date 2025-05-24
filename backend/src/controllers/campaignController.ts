@@ -35,25 +35,6 @@ export class CampaignController {
     try {
       const campaignData: CreateCampaignRequest = req.body;
 
-      // Basic validation
-      if (!campaignData.name || !campaignData.objective) {
-        return res.status(400).json({
-          error: 'Campaign name and objective are required',
-        });
-      }
-
-      const validObjectives = [
-        'OUTCOME_TRAFFIC',
-        'OUTCOME_AWARENESS',
-        'OUTCOME_ENGAGEMENT',
-        'OUTCOME_LEADS',
-      ];
-      if (!validObjectives.includes(campaignData.objective)) {
-        return res.status(400).json({
-          error: 'Invalid campaign objective',
-        });
-      }
-
       // Add user_id from authenticated user
       if (req.user) {
         campaignData.user_id = req.user.id;
