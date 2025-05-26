@@ -3,6 +3,7 @@ import axios from 'axios';
 export interface MetaCampaign {
   id: string;
   name: string;
+  objective: string;
   status: string;
   daily_budget: string;
 }
@@ -28,7 +29,7 @@ export class MetaApiService {
     try {
       const url = `${this.BASE_URL}/act_${this.ACCOUNT_ID}/campaigns`;
       const params = {
-        fields: 'id,name,status,daily_budget',
+        fields: 'id,name,status,objective,daily_budget',
         access_token: this.ACCESS_TOKEN,
       };
 
@@ -37,7 +38,11 @@ export class MetaApiService {
     } catch (error) {
       console.error('Error fetching campaigns from Meta API:', error);
       if (axios.isAxiosError(error)) {
-        throw new Error(`Meta API Error: ${error.response?.data?.error?.message || error.message}`);
+        throw new Error(
+          `Meta API Error: ${
+            error.response?.data?.error?.message || error.message
+          }`
+        );
       }
       throw new Error('Failed to fetch campaigns from Meta API');
     }
