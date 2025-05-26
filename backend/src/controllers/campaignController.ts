@@ -1,13 +1,13 @@
 import { Request, Response } from 'express';
 import { CampaignModel } from '../models/Campaign';
 import { CreateCampaignRequest } from '../types';
+import { MetaApiService } from '../services/metaApiService';
 
 export class CampaignController {
   static async getAllCampaigns(req: Request, res: Response) {
     try {
-      // If user is authenticated, only return their campaigns
-      const userId = req.user?.id;
-      const campaigns = await CampaignModel.getAll(userId);
+      // Fetch campaigns from Meta API instead of PostgreSQL
+      const campaigns = await MetaApiService.getCampaigns();
       res.json(campaigns);
     } catch (error) {
       console.error('Error fetching campaigns:', error);

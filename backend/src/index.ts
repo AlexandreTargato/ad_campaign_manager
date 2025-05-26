@@ -10,6 +10,15 @@ import authRoutes from './routes/auth';
 
 dotenv.config();
 
+// Validate required environment variables
+const requiredEnvVars = ['META_ACCESS_TOKEN', 'ACCOUNT_ID'];
+for (const envVar of requiredEnvVars) {
+  if (!process.env[envVar]) {
+    console.error(`Missing required environment variable: ${envVar}`);
+    process.exit(1);
+  }
+}
+
 const app = express();
 const PORT = process.env.PORT || 3001;
 
